@@ -6,11 +6,11 @@ from scipy.integrate import odeint
 # Title
 st.title("Batch Reactor Simulator (Conversion & Concentration)")
 
-# User inputs
-C0 = st.number_input("Initial Concentration (mol/L)", value=100.0)
-k = st.number_input("Rate Constant k (1/hr)", value=0.3)
-n = st.number_input("Reaction Order n", value=1.0)
-t_final = st.number_input("Total Time (hr)", value=10.0)
+# User inputs with validation
+C0 = st.number_input("Initial Concentration (mol/L)", value=100.0, min_value=0.0)
+k = st.number_input("Rate Constant k (1/hr)", value=0.3, min_value=0.0)
+n = st.number_input("Reaction Order n", value=1.0, min_value=0.0)
+t_final = st.number_input("Total Time (hr)", value=10.0, min_value=0.1)
 
 # Time vector
 t = np.linspace(0, t_final, 100)
@@ -39,4 +39,8 @@ st.line_chart(df_conv)
 target_X = 0.90
 closest_index = (np.abs(X - target_X)).argmin()
 time_to_90 = t[closest_index]
-st.success(f"Time to reach 90% conversion: {time_to_90:.2f} hr")
+
+if X[closest_index] >= target_X:
+    st.success(f"Time to reach 90% conversion: {time_to_90:.2f} hr")
+else:
+    st.warning("90% conversion not reached in the given time frame.")
