@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 from scipy.integrate import odeint
 
 # Title
@@ -24,12 +24,16 @@ C = odeint(rate_law, C0, t, args=(k, n))
 C = C.flatten()
 X = (C0 - C) / C0
 
+# Prepare data for plotting
+df_conc = pd.DataFrame({'Concentration': C}, index=t)
+df_conv = pd.DataFrame({'Conversion': X}, index=t)
+
 # Plots
 st.subheader("Concentration vs Time")
-st.line_chart(data=C, x=t, y=None)
+st.line_chart(df_conc)
 
 st.subheader("Conversion vs Time")
-st.line_chart(data=X, x=t, y=None)
+st.line_chart(df_conv)
 
 # Time to reach 90% conversion
 target_X = 0.90
