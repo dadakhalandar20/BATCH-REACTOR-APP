@@ -1,0 +1,38 @@
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+
+# Title
+st.title("Batch Reactor Simulator (Conversion & Concentration)")
+
+# User inputs
+C0 = st.number_input("Initial Concentration (mol/L)", value=100.0)
+k = st.number_input("Rate Constant k (1/hr)", value=0.3)
+n = st.number_input("Reaction Order n", value=1.0)
+t_final = st.number_input("Total Time (hr)", value=10.0)
+
+# Time vector
+t = np.linspace(0, t_final, 100)
+
+# Reaction rate law
+def rate_law(C, t, k, n):
+    return -k * C**n
+
+# Solve ODE
+C = odeint(rate_law, C0, t, args=(k, n))
+C = C.flatten()
+X = (C0 - C) / C0
+
+# Plots
+st.subheader("Concentration vs Time")
+st.line_chart(data=C, x=t, y=None)
+
+st.subheader("Conversion vs Time")
+st.line_chart(data=X, x=t, y=None)
+
+# Time to reach 90% conversion
+target_X = 0.90
+closest_index = (np.abs(X - target_X)).argmin()
+time_to_90 = t[closest_index]
+st.success(f"Time to reach 90% conversion: {time_to_90:.2f} hr")
